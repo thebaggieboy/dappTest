@@ -172,8 +172,7 @@ async function main() {
 
   const permit = await createPermit("0x5B38Da6a701c568545dCfcB03FcB875f56beddC4", 1000, 0, 2661766724)
   console.log(`r: 0x${permit.r.toString('hex')}, s: 0x${permit.s.toString('hex')}, v: ${permit.v}, sig: ${permit.signature}`)
-  console.log("Account address: ", address)
-console.log("Signed by: ", address)
+ console.log("Signed by: ", address)
 }
 
 
