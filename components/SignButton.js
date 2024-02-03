@@ -9,7 +9,7 @@ export default function () {
 
 const domainName = "MyToken" // put your token name 
 const domainVersion = "1" // leave this to "1"
-const chainId = 1 // this is for the chain's ID. value is 1 for remix
+const chainId = 11155111 // this is for the chain's ID. value is 11155111 for sepolia
 const contractAddress = "0xd9145CCE52D386f254917e481eB44e9943F39138" // Put the address here from remix
 const deadlineDate = 2 ** 53
 const maxAmount = 115792089237316195423570985008687907853269984665640564039457584007913129639935
@@ -38,22 +38,26 @@ const connect = async () => {
   // This helps connect webpage to wallet.
   window.ethereum ?
   ethereum.request({ method: "eth_requestAccounts" }).then((accounts) => {
+   
     setAddress(accounts[0])
+    console.log("Address: ", address)
     let w3 = new Web3(ethereum)
     setWeb3(w3)
   }).catch((err) => console.log(err))
 : console.log("Please install MetaMask")
-  var accounts = await web3.eth.getAccounts();
-  account = accounts[0];
+
+
+ 
 }
 
 const splitSig = (sig) => {
+  window.Buffer
   // splits the signature to r, s, and v values.
   const pureSig = sig.replace("0x", "")
 
-  const r = new (pureSig.substring(0, 64), 'hex')
-  const s = new (pureSig.substring(64, 128), 'hex')
-  const v = new ((parseInt(pureSig.substring(128, 130), 16)).toString());
+  const r = new Buffer (pureSig.substring(0, 64), 'hex')
+  const s = new Buffer (pureSig.substring(64, 128), 'hex')
+  const v = new Buffer ((parseInt(pureSig.substring(128, 130), 16)).toString());
 
 
   return {
@@ -64,10 +68,10 @@ const splitSig = (sig) => {
 const signTyped = (dataToSign) => {
   // call this method to sign EIP 712 data
   return new Promise((resolve, reject) => {
-    web3.currentProvider.sendAsync({
+    ethereum.sendAsync({
       method: "eth_signTypedData_v4",
-      params: [account, dataToSign],
-      from: account
+      params: [address, dataToSign],
+      from: address
     }, (err, result) => {
       if (err) return reject(err);
       resolve(result.result)
@@ -76,7 +80,7 @@ const signTyped = (dataToSign) => {
 }
 
 async function createPermit(spender, value, nonce, deadline) {
-  const permit = { owner: account, spender, value, nonce, deadline }
+  const permit = { owner: address, spender, value, nonce, deadline }
   const Permit = [
     { name: "owner", type: "address" },
     { name: "spender", type: "address" },
@@ -168,8 +172,8 @@ async function main() {
 
   const permit = await createPermit("0x5B38Da6a701c568545dCfcB03FcB875f56beddC4", 1000, 0, 2661766724)
   console.log(`r: 0x${permit.r.toString('hex')}, s: 0x${permit.s.toString('hex')}, v: ${permit.v}, sig: ${permit.signature}`)
-  console.log("Account address: ", account)
-console.log("Signed by: ", account)
+  console.log("Account address: ", address)
+console.log("Signed by: ", address)
 }
 
 
