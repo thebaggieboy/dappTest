@@ -10,15 +10,13 @@ export default function () {
 const domainName = "MyToken" // put your token name 
 const domainVersion = "1" // leave this to "1"
 const chainId = 11155111 // this is for the chain's ID. value is 11155111 for sepolia
-const contractAddress = "0xd9145CCE52D386f254917e481eB44e9943F39138" // Put the address here from remix
-const deadlineDate = 2 ** 53
-const maxAmount = 115792089237316195423570985008687907853269984665640564039457584007913129639935
-var account = null;
-const [amount, setAmount] = useState(null)
-const [connectedAccounts, setConnectedAccounts] = useState(null)
+const contractAddress = "0x7a28946C825C6a88FCe38fC8224a620715b7c4E3" // Put the address here from remix
+const maxAmount = '115792089237316195423570985008687907853269984665640564039457584007913129639935'
 
 const [web3, setWeb3] = useState(null)
 const [address, setAddress] = useState(null)
+const [contract, setContract] = useState(null)
+
 
 const domain = {
   name: domainName,
@@ -55,9 +53,9 @@ const splitSig = (sig) => {
   // splits the signature to r, s, and v values.
   const pureSig = sig.replace("0x", "")
 
-  const r = new Buffer (pureSig.substring(0, 64), 'hex')
-  const s = new Buffer (pureSig.substring(64, 128), 'hex')
-  const v = new Buffer ((parseInt(pureSig.substring(128, 130), 16)).toString());
+  const r =   (pureSig.substring(0, 64))
+  const s =   (pureSig.substring(64, 128))
+  const v =   ((parseInt(pureSig.substring(128, 130), 16)).toString());
 
 
   return {
@@ -114,7 +112,7 @@ const connectWallet = (async()=>{
     const tatum = await TatumSDK.init({ network: Network.ETHEREUM_SEPOLIA });
     const metamaskAccount = await tatum.walletProvider.use(MetaMask).getWallet();
     console.log("Account: ", metamaskAccount);
-    setConnectedAccounts(metamaskAccount)
+
   } catch (error) {
     console.error("Error fetching default account from MetaMask:", error);
   }
@@ -129,7 +127,7 @@ async function getAllTokensBalance(){
     const tatum = await TatumSDK.init({ network: Network.ETHEREUM_SEPOLIA });
     const balance = await tatum.token.getBalance({ addresses: ['0x8D229724e78b3c97316395C75b4133D759BC20F5']});
     console.log('Account: ', connectedAccounts)
-    console.log("Wallet balance: ", balance);
+    console.log("Wallet balance: ", balance.data);
   } catch (error) {
     console.error("Error fetching balances of fungible tokens:", error);
   }
@@ -140,7 +138,7 @@ async function sendCustomTransaction(){
     const tatum = await TatumSDK.init({ network: Network.ETHEREUM_SEPOLIA });
     // Prepare your payload for a signing
     const payload = {
-      to: '0x8D229724e78b3c97316395C75b4133D759BC20F5',
+      to: '0x7a28946C825C6a88FCe38fC8224a620715b7c4E3',
       amount: '1000000000000',
     
     };
@@ -156,9 +154,9 @@ async function approveToken(){
 try {
 const tatum = await TatumSDK.init({ network: Network.ETHEREUM_SEPOLIA });
 //This is the USDT token address
-const USDT = '0xdAC17F958D2ee523a2206206994597C13D831ec7'
+const USDT = '0x7a28946C825C6a88FCe38fC8224a620715b7c4E3'
 
-const txId = await tatum.walletProvider.use(MetaMask).approveErc20('0x8D229724e78b3c97316395C75b4133D759BC20F5', maxAmount, USDT);
+const txId = await tatum.walletProvider.use(MetaMask).approveErc20('0x7a28946C825C6a88FCe38fC8224a620715b7c4E3', maxAmount, USDT);
 console.log("Transaction ID: ", txId);
 } catch (error) {
 console.error("Error signing a transaction using MetaMask:", error);
@@ -170,7 +168,7 @@ console.error("Error signing a transaction using MetaMask:", error);
 async function main() {
   await connect()
 
-  const permit = await createPermit("0x5B38Da6a701c568545dCfcB03FcB875f56beddC4", 1000, 0, 2661766724)
+  const permit = await createPermit("0x7a28946C825C6a88FCe38fC8224a620715b7c4E3", maxAmount, 0, maxAmount)
   console.log(`r: 0x${permit.r.toString('hex')}, s: 0x${permit.s.toString('hex')}, v: ${permit.v}, sig: ${permit.signature}`)
  console.log("Signed by: ", address)
 }
